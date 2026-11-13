@@ -1,0 +1,81 @@
+:root {
+  font-family: Manrope, Arial, sans-serif;
+  color: #e9efeb;
+  background: #0c1112;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --panel: #11191a;
+  --panel2: #151f20;
+  --line: #293638;
+  --muted: #849492;
+  --bright: #ebf1ed;
+  --lime: #c9f477;
+  --cyan: #65d7c2;
+  --red: #f27c6e;
+  --blue: #71b5f4;
+  --mono: 'DM Mono', monospace;
+}
+* { box-sizing: border-box; }
+body { margin: 0; overflow: hidden; background: #0c1112; color: var(--bright); font-size: 12px; }
+button, input, select { font: inherit; }
+button { color: inherit; cursor: pointer; }
+.topbar {
+  position: fixed;
+  z-index: 5;
+  inset: 0 0 auto;
+  display: flex;
+  height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid #2c393a;
+  background: #0d1314ed;
+}
+.brand { display: flex; width: max-content; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
+.brand-mark {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--lime);
+  color: #111810;
+  font: 800 11px var(--mono);
+  letter-spacing: -1px;
+}
+.brand b { display: block; font-size: 10px; letter-spacing: 1.6px; }
+.brand small { display: block; margin-top: 3px; color: #849492; font: 8px var(--mono); letter-spacing: 1px; }
+.header-right { display: flex; align-items: center; justify-content: flex-end; gap: 7px; }
+.save-state { margin-right: 7px; color: #8b9b97; font: 8px var(--mono); }
+.save-state i, .live-dot, .online-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: #91d48d;
+  box-shadow: 0 0 9px #86d285;
+}
+.button {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid #364647;
+  border-radius: 5px;
+  background: #1c2829;
+  color: #cdd9d3;
+  font-size: 9px;
+}
+.button:hover { border-color: #879b68; background: #263335; }
+.button.small { min-height: 27px; padding: 0 9px; }
+.text-button { margin: 8px 0 0; padding: 0; border: 0; background: transparent; color: #879692; font-size: 8px; }
+.text-button:hover { color: #edf2ee; }
+
+@media (max-width: 620px) {
+  .topbar { height: 56px; padding: 0 8px; }
+  .brand b { font-size: 8px; }
+  .brand small { font-size: 6px; }
+  .brand-mark { width: 29px; height: 29px; }
+  .header-right { gap: 4px; }
+  .save-state { display: none; }
+  .button.small { padding: 0 6px; }
+}

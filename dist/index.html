@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' http://127.0.0.1:*">
+  <title>Railway Digital Twin</title>
+  <script type="module" crossorigin src="./assets/index-BC6Pt7BU.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-wuAKQ9Le.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Railway Digital Twin home"><span class="brand-mark">DT</span><span><b>DARK TERRITORY</b><small>RAILWAY DIGITAL TWIN</small></span></a>
+    <div class="header-right"><span class="save-state"><i></i> LOCAL SESSION</span><button id="twinExport" class="button small">Export</button><button id="twinImport" class="button small">Import</button><input id="twinFile" type="file" accept=".json,application/json" hidden></div>
+  </header>
+  <section id="twinView" class="twin-view" aria-label="Digital twin layout editor">
+    <aside class="twin-tools">
+      <div class="twin-panel-heading"><span class="eyebrow">LAYOUT EDITOR</span><h1>Eye in the sky</h1><p>Place track, move elements, and manage connected devices.</p></div>
+      <div class="twin-tool-group">
+        <span class="twin-label">EDIT MODE</span>
+        <button class="twin-tool active" data-twin-tool="select"><b>↖</b><span>Select & move<small>Drag an element to edit</small></span></button>
+        <button class="twin-tool" data-twin-tool="straight"><b>━━</b><span>Straight track<small>120 mm section</small></span></button>
+        <button class="twin-tool" data-twin-tool="curve"><b>◜</b><span>Curve track<small>90° section</small></span></button>
+        <button class="twin-tool" data-twin-tool="turnout"><b>⑂</b><span>Turnout<small>Switch section</small></span></button>
+        <button class="twin-tool" data-twin-tool="signal"><b>▥</b><span>Signal<small>Controller device</small></span></button>
+        <button class="twin-tool" data-twin-tool="train"><b>▰</b><span>DCC train<small>Controller device</small></span></button>
+        <button class="twin-tool" data-twin-tool="crossing"><b>╫</b><span>Crosswalk lights<small>Controller device</small></span></button>
+        <button class="twin-tool" data-twin-tool="sensor"><b>⌁</b><span>Track sensor<small>Controller device</small></span></button>
+        <button class="twin-tool danger-tool" data-twin-tool="remove"><b>⌫</b><span>Remove element<small>Select an item to delete</small></span></button>
+      </div>
+      <div class="twin-tool-actions"><button id="twinRotate" class="button">↻ Rotate 90°</button><button id="twinFit" class="button">⊡ Fit view</button></div>
+      <div class="twin-footnote"><span class="status-dot online"></span>Local session autosaves in this browser.</div>
+    </aside>
+    <main class="twin-stage">
+      <div class="twin-stage-top"><div><span class="live-dot"></span> OVERVIEW <span class="stage-divider">/</span> <b>TRACK PLAN</b></div><div class="stage-readout"><span id="twinTrackCount">0 track pieces</span><span class="stage-divider">·</span><span id="twinDeviceCount">0 devices</span></div></div>
+      <svg id="twinCanvas" class="twin-canvas" viewBox="0 0 1000 620" role="application" aria-label="Interactive top-down railway plan. Click to place items, drag to move, and use the wheel to zoom.">
+        <defs>
+          <pattern id="twinGrid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M 24 0 L 0 0 0 24" fill="none" stroke="#293737" stroke-width=".7"/></pattern>
+          <pattern id="twinMajorGrid" width="120" height="120" patternUnits="userSpaceOnUse"><rect width="120" height="120" fill="url(#twinGrid)"/><path d="M 120 0 L 0 0 0 120" fill="none" stroke="#354444" stroke-width="1.2"/></pattern>
+          <filter id="twinGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect class="canvas-backdrop" width="1000" height="620"/>
+        <g id="twinWorld">
+          <rect class="layout-board" x="48" y="55" width="904" height="510" rx="13"/>
+          <rect class="layout-grid" x="48" y="55" width="904" height="510" rx="13" fill="url(#twinMajorGrid)"/>
+          <g id="twinTracks" aria-label="Track pieces"></g>
+          <g id="twinDevices" aria-label="Railway devices"></g>
+          <g id="twinSelection" aria-hidden="true"></g>
+          <text class="board-mark" x="72" y="91">MODULE A · 2.4 × 1.2 M</text>
+          <text class="board-mark board-scale" x="928" y="91" text-anchor="end">HO · 1:87</text>
+        </g>
+      </svg>
+      <div class="twin-stage-bottom"><span><kbd>Drag</kbd> move or pan <span class="stage-divider">·</span> <kbd>Wheel</kbd> zoom <span class="stage-divider">·</span> <kbd>R</kbd> rotate <span class="stage-divider">·</span> <kbd>Del</kbd> remove</span><span id="cursorReadout">READY</span></div>
+      <div id="twinToast" class="twin-toast" role="status"></div>
+    </main>
+    <aside class="twin-inspector">
+      <div class="twin-inspector-heading"><div><span class="eyebrow">HARDWARE BRIDGE</span><h2>Controllers</h2></div><span class="simulation-badge">SIMULATED</span></div>
+      <p class="twin-intro">Independent controller links for DCC, signals, and crossing lights.</p>
+      <div id="controllerList" class="controller-list"></div>
+      <div class="twin-selected-wrap">
+        <div class="twin-inspector-heading selected-heading"><div><span class="eyebrow">DEVICE DETAIL</span><h2 id="selectedTitle">Select a device</h2></div><span id="selectedStatus" class="device-status">—</span></div>
+        <div id="selectedDevice" class="selected-device"><p>Choose an element on the plan to see its status and controls.</p></div>
+      </div>
+      <div class="server-path"><span class="server-icon">⇄</span><div><b>Integration path</b><small>Device adapter → central server → hardware driver</small></div></div>
+      <div class="twin-activity-head"><span class="eyebrow">ACTIVITY</span><button id="clearTwinActivity" class="text-button">Clear</button></div>
+      <div id="twinActivity" class="twin-activity"><span class="activity-empty">Twin ready · simulated controllers online.</span></div>
+    </aside>
+  </section>
+</body>
+</html>
